@@ -11,3 +11,5 @@ Database design
 
 db-migrate installed
     database.json with dev and test DBs.
+
+dotenv installed
