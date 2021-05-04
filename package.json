@@ -7,7 +7,7 @@
     "start-dev": "nodemon src/server.ts",
     "start-prod": "node ./dist/server.js",
     "build": "npx tsc",
-    "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./dist --onSuccess 'node ./dist/server.js'",
+    "watch": "tsc-watch --onSuccess 'node ./dist/server.js'",
     "test": "jasmine-ts",
     "lint": "eslint **/*.ts --fix --quiet",
     "prettier": "npx prettier **/*.ts --check",
