@@ -2,6 +2,9 @@ import express, { Request, Response } from 'express';
 //import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
+//import userRoutes
+import userRoutes from './handlers/users';
+
 dotenv.config();
 
 const EXPRESS_PORT = process.env.EXPRESS_PORT;
@@ -21,3 +24,8 @@ app.get('/', function (req: Request, res: Response) {
 app.listen(3000, function () {
 	console.log(`starting app on: ${address}`);
 });
+
+userRoutes(app);
+
+//Export app for testing
+export default app;
