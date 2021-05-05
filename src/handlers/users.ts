@@ -9,7 +9,7 @@ const index = async (req: Request, res: Response) => {
 };
 
 const show = async (req: Request, res: Response) => {
-	const user = await store.show(req.body.id);
+	const user = await store.show(req.params.id);
 	res.json(user);
 };
 
@@ -53,7 +53,7 @@ const authenticate = async (req: Request, res: Response) => {
 
 const userRoutes = (app: express.Application): void => {
 	app.get('/users', index);
-	app.get('/users/{:id}', show);
+	app.get('/users/:id', show);
 	app.post('/users', create);
 	app.delete('/users', destroy);
 	app.post('/users/authenticate', authenticate);
