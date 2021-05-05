@@ -37,8 +37,8 @@ const destroy = async (req: Request, res: Response) => {
 const authenticate = async (req: Request, res: Response) => {
 	const user: User = {
 		userName: req.body.userName,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
+		firstName: req.body.firstName,
+		lastName: req.body.lastName,
 		password: req.body.password
 	};
 
