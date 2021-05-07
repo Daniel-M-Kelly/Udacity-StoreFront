@@ -9,15 +9,22 @@ const verifyAuthToken = (
 ): void => {
 	try {
 		const authorizationHeader = req.headers.authorization;
-		const token = authorizationHeader.split(' ')[1];
-		const decoded = jwt.verify(
-			token,
-			(process.env.TOKEN_SECRET as unknown) as string
-		);
-
-		next();
-	} catch (error) {
+		if (authorizationHeader) {
+			const token = authorizationHeader.split(' ')[1];
+			console.log(`The token is: ${token}`);
+			const decode = jwt.verify(
+				token,
+				(process.env.TOKEN_SECRET as unknown) as string
+			);
+			if (decode) {
+				next();
+			} else {
+				res.status(401);
+			}
+		}
+	} catch (err) {
 		res.status(401);
+		res.json(err);
 	}
 };
 

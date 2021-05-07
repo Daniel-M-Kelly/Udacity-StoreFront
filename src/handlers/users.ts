@@ -1,10 +1,11 @@
 import express, { Request, Response } from 'express';
 import { User, UserStore } from '../models/user';
 import jwt from 'jsonwebtoken';
+import verifyAuthToken from '../middleware/verifyAuthToken';
 
 const store = new UserStore();
 
-const index = async (req: Request, res: Response) => {
+const index = async (_req: Request, res: Response) => {
 	const users = await store.index();
 	res.json(users);
 };
@@ -59,6 +60,8 @@ const authenticate = async (req: Request, res: Response) => {
 };
 
 const userRoutes = (app: express.Application): void => {
+	//app.get('/users', verifyAuthToken, index);
+	//app.get('/users/:id', verifyAuthToken, show);
 	app.get('/users', index);
 	app.get('/users/:id', show);
 	app.post('/users', create);

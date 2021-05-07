@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 //import userRoutes
 import userRoutes from './handlers/users';
+import productRoutes from './handlers/products';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.listen(3000, function () {
 });
 
 userRoutes(app);
+productRoutes(app);
 
 //Export app for testing
 export default app;
