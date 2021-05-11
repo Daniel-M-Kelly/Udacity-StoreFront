@@ -28,7 +28,7 @@ const create = async (req: Request, res: Response) => {
 			{
 				user: newUser
 			},
-			(process.env.TOKEN_SECRET as unknown) as string
+			process.env.TOKEN_SECRET as unknown as string
 		);
 		res.json(token);
 	} catch (err) {

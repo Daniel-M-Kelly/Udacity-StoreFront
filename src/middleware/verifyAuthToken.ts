@@ -14,7 +14,7 @@ const verifyAuthToken = (
 			console.log(`The token is: ${token}`);
 			const decode = jwt.verify(
 				token,
-				(process.env.TOKEN_SECRET as unknown) as string
+				process.env.TOKEN_SECRET as unknown as string
 			);
 			if (decode) {
 				next();

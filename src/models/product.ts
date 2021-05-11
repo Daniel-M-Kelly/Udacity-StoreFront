@@ -53,12 +53,35 @@ export class ProductStore {
 		}
 	}
 
+	async edit(p: Product): Promise<Product> {
+		try {
+			const conn = await client.connect();
+			const sql =
+				'UPDATE products SET "name" = $1, "price" = $2, "category" = $3 WHERE "id" = $4 RETURNING *';
+
+			const result = await conn.query(sql, [
+				p.name,
+				p.price,
+				p.category,
+				p.id
+			]);
+
+			const product = result.rows[0];
+			conn.release();
+
+			return product;
+		} catch (err) {
+			throw new Error(`Unable to edit Product (${p.name}): ${err}`);
+		}
+	}
+
 	async delete(id: string): Promise<Product> {
 		try {
 			const conn = await client.connect();
 			const sql = 'DELETE FROM products WHERE "id"=$1';
 			const result = await conn.query(sql, [id]);
 			const product = result.rows[0];
+			conn.release();
 			return product;
 		} catch (err) {
 			throw new Error(`Cannot Delete User with id: (${id}) ${err}`);
