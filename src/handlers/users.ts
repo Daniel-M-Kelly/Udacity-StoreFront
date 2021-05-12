@@ -28,9 +28,27 @@ const create = async (req: Request, res: Response) => {
 			{
 				user: newUser
 			},
-			process.env.TOKEN_SECRET as unknown as string
+			(process.env.TOKEN_SECRET as unknown) as string
 		);
 		res.json(token);
+	} catch (err) {
+		res.status(400);
+		res.json(err + user);
+	}
+};
+
+const edit = async (req: Request, res: Response) => {
+	const user: User = {
+		id: req.body.id,
+		userName: req.body.userName,
+		firstName: req.body.firstName,
+		lastName: req.body.lastName,
+		password: req.body.password
+	};
+
+	try {
+		const updatedUser = await store.edit(user);
+		return res.json(updatedUser);
 	} catch (err) {
 		res.status(400);
 		res.json(err + user);
@@ -65,6 +83,7 @@ const userRoutes = (app: express.Application): void => {
 	app.get('/users', index);
 	app.get('/users/:id', show);
 	app.post('/users', create);
+	app.patch('/users/:id', edit);
 	app.delete('/users', destroy);
 	app.post('/users/authenticate', authenticate);
 };

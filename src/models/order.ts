@@ -6,6 +6,13 @@ export type Order = {
 	complete: boolean;
 };
 
+export type OrderProduct = {
+	id?: number;
+	quantity: number;
+	order_id: number;
+	product_id: number;
+};
+
 export class OrderStore {
 	async index(): Promise<Order[]> {
 		try {
@@ -81,30 +88,39 @@ export class OrderStore {
 		}
 	}
 
-	async addOrderProduct(
-		quantity: number,
-		order_id: number,
-		product_id: number
-	): Promise<Order> {
+	async indexOrderProducts(id: number): Promise<OrderProduct[]> {
+		try {
+			const conn = await client.connect();
+			const sql = 'SELECT * FROM order_products where "order_id" = $1';
+			const result = await conn.query(sql, [id]);
+			return result.rows;
+		} catch (err) {
+			throw new Error(
+				`Cannot retreive Products in Order (${id}): ${err}`
+			);
+		}
+	}
+
+	async addOrderProduct(oP: OrderProduct): Promise<OrderProduct> {
 		try {
 			const conn = await client.connect();
 			const sql =
-				'INSERT INTO order_products ("quantity", "order_id", "product_id" VALUES ($1, $2, $3)';
+				'INSERT INTO order_products ("quantity", "order_id", "product_id") VALUES ($1, $2, $3) RETURING *';
 
 			const result = await conn.query(sql, [
-				quantity,
-				order_id,
-				product_id
+				oP.quantity,
+				oP.order_id,
+				oP.product_id
 			]);
 
-			const order = result.rows[0];
+			const orderProduct = result.rows[0];
 
 			conn.release();
 
-			return order;
+			return orderProduct;
 		} catch (err) {
 			throw new Error(
-				`Cannot add product id (${product_id}) to order id (${order_id}): ${err}`
+				`Cannot add product id (${oP.product_id}) to order id (${oP.order_id}): ${err}`
 			);
 		}
 	}
@@ -112,15 +128,17 @@ export class OrderStore {
 	async deleteOrderProduct(
 		order_id: number,
 		product_id: number
-	): Promise<void> {
+	): Promise<OrderProduct> {
 		try {
 			const conn = await client.connect();
 			const sql =
-				'DELETE FROM order_products WHERE "order_id"=$1 AND "product_id"=$2';
+				'DELETE FROM order_products WHERE "order_id"=$1 AND "product_id"=$2 RETURNING *';
 
 			const result = await conn.query(sql, [order_id, product_id]);
+			const orderProduct = result.rows[0];
 
 			conn.release();
+			return orderProduct;
 		} catch (err) {
 			throw new Error(
 				`Could not delete item (${product_id}) from Order (${order_id}): ${err}`
@@ -128,25 +146,26 @@ export class OrderStore {
 		}
 	}
 
-	async updateOrderProductQty(
-		quantity: number,
-		order_id: number,
-		product_id: number
-	): Promise<void> {
+	async editOrderProduct(oP: OrderProduct): Promise<OrderProduct> {
 		try {
 			const conn = await client.connect();
 			const sql =
-				'UPDATE order_products SET "quantity" = $1 where "order_id"= $2 and "product_id" = $3 ';
+				'UPDATE order_products SET "quantity" = $1, "order_id" = $2,  "product_id" = $3 WHERE "id" = $4 RETURNING *';
 
 			const result = await conn.query(sql, [
-				quantity,
-				order_id,
-				product_id
+				oP.quantity,
+				oP.order_id,
+				oP.product_id,
+				oP.id
 			]);
+
+			const orderProduct = result.rows[0];
+
 			conn.release();
+			return orderProduct;
 		} catch (err) {
 			throw new Error(
-				`Could not update quantity of product (${product_id}) in order (${order_id}): ${err}`
+				`Could not update quantity of product (${oP.product_id}) in order (${oP.order_id}): ${err}`
 			);
 		}
 	}
