@@ -51,7 +51,7 @@ export class UserStore {
 
 			const hash = bcrypt.hashSync(
 				u.password + pepper,
-				parseInt((saltRounds as unknown) as string)
+				parseInt(saltRounds as unknown as string)
 			);
 
 			const result = await conn.query(sql, [
@@ -78,7 +78,7 @@ export class UserStore {
 
 			const hash = bcrypt.hashSync(
 				u.password + pepper,
-				parseInt((saltRounds as unknown) as string)
+				parseInt(saltRounds as unknown as string)
 			);
 
 			const result = await conn.query(sql, [

@@ -9,7 +9,7 @@ const index = async (_req: Request, res: Response) => {
 };
 
 const show = async (req: Request, res: Response) => {
-	const order = await store.show((req.params.id as unknown) as number);
+	const order = await store.show(req.params.id as unknown as number);
 	res.json(order);
 };
 
@@ -57,7 +57,7 @@ const destroy = async (req: Request, res: Response) => {
 const indexOrderProducts = async (req: Request, res: Response) => {
 	try {
 		const orderProducts = await store.indexOrderProducts(
-			(req.body.id as unknown) as number
+			req.body.id as unknown as number
 		);
 		res.json(orderProducts);
 	} catch (err) {
@@ -67,7 +67,6 @@ const indexOrderProducts = async (req: Request, res: Response) => {
 };
 
 const addOrderProduct = async (req: Request, res: Response) => {
-	
 	const product: OrderProduct = {
 		quantity: req.body.quantity,
 		order_id: req.body.order_id,
@@ -91,7 +90,7 @@ const editOrderProduct = async (req: Request, res: Response) => {
 		product_id: req.body.product_id
 	};
 	try {
-		const newProduct = await store.editOrderProduct(product)
+		const newProduct = await store.editOrderProduct(product);
 		res.json(newProduct);
 	} catch (err) {
 		res.status(400);
@@ -102,8 +101,8 @@ const editOrderProduct = async (req: Request, res: Response) => {
 const deleteOrderProduct = async (req: Request, res: Response) => {
 	try {
 		const product = await store.deleteOrderProduct(
-			(req.body.order_id as unknown) as number,
-			(req.body.product_id as unknown) as number
+			req.body.order_id as unknown as number,
+			req.body.product_id as unknown as number
 		);
 		res.json(product);
 	} catch (err) {
@@ -119,7 +118,7 @@ const orderRoutes = (app: express.Application): void => {
 	app.patch('/orders/:id', edit);
 	app.delete('/orders', destroy);
 	app.post('/orders/:id', addOrderProduct);
-	
+
 	app.patch('/order/:id/item/:id', editOrderProduct);
 	app.delete('/orders/:id', deleteOrderProduct);
 };
