@@ -70,21 +70,25 @@ const authenticate = async (req: Request, res: Response) => {
 
 	try {
 		const u = await store.authenticate(user.userName, user.password);
-		res.json(u);
+		const token = jwt.sign(
+			{
+				user: u
+			},
+			process.env.TOKEN_SECRET as unknown as string
+		);
+		res.json(token);
 	} catch (err) {
 		res.status(401);
-		res.json(err + user);
+		res.json(err);
 	}
 };
 
 const userRoutes = (app: express.Application): void => {
-	//app.get('/users', verifyAuthToken, index);
-	//app.get('/users/:id', verifyAuthToken, show);
-	app.get('/users', index);
-	app.get('/users/:id', show);
-	app.post('/users', create);
-	app.patch('/users/:id', edit);
-	app.delete('/users', destroy);
+	app.get('/users', verifyAuthToken, index);
+	app.get('/users/:id', verifyAuthToken, show);
+	app.post('/users', verifyAuthToken, create);
+	app.patch('/users/:id', verifyAuthToken, edit);
+	app.delete('/users', verifyAuthToken, destroy);
 	app.post('/users/authenticate', authenticate);
 };
 

@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { Order, OrderProduct, OrderStore } from '../models/order';
+import verifyAuthToken from '../middleware/verifyAuthToken';
 
 const store = new OrderStore();
 
@@ -114,14 +115,14 @@ const deleteOrderProduct = async (req: Request, res: Response) => {
 
 const orderRoutes = (app: express.Application): void => {
 	app.get('/orders', index);
-	app.get('/orders/:id', show);
-	app.post('/orders', create);
-	app.patch('/orders/:id', edit);
-	app.delete('/orders', destroy);
-	app.post('/orders/:id', addOrderProduct);
-	app.get('/orders/:id/item/:id', showOrderProduct);
-	app.patch('/order/:id/item/:id', editOrderProduct);
-	app.delete('/orders/:id', deleteOrderProduct);
+	app.get('/orders/:id', verifyAuthToken, show);
+	app.post('/orders', verifyAuthToken, create);
+	app.patch('/orders/:id', verifyAuthToken, edit);
+	app.delete('/orders', verifyAuthToken, destroy);
+	app.post('/orders/:id', verifyAuthToken, addOrderProduct);
+	app.get('/orders/:id/item/:id', verifyAuthToken, showOrderProduct);
+	app.patch('/order/:id/item/:id', verifyAuthToken, editOrderProduct);
+	app.delete('/orders/:id', verifyAuthToken, deleteOrderProduct);
 };
 
 export default orderRoutes;

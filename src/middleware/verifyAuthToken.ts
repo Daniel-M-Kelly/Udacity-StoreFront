@@ -11,7 +11,6 @@ const verifyAuthToken = (
 		const authorizationHeader = req.headers.authorization;
 		if (authorizationHeader) {
 			const token = authorizationHeader.split(' ')[1];
-			console.log(`The token is: ${token}`);
 			const decode = jwt.verify(
 				token,
 				process.env.TOKEN_SECRET as unknown as string
@@ -19,8 +18,10 @@ const verifyAuthToken = (
 			if (decode) {
 				next();
 			} else {
-				res.status(401);
+				res.status(401).send('Invalid or Expired Token');
 			}
+		} else {
+			res.status(401).send('Valid Token Required');
 		}
 	} catch (err) {
 		res.status(401);

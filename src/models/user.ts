@@ -129,6 +129,6 @@ export class UserStore {
 				return user;
 			}
 		}
-		return null;
+		throw new Error('Invalid username or Password');
 	}
 }
