@@ -54,10 +54,11 @@ const destroy = async (req: Request, res: Response) => {
 	}
 };
 
-const indexOrderProducts = async (req: Request, res: Response) => {
+const showOrderProduct = async (req: Request, res: Response) => {
 	try {
-		const orderProducts = await store.indexOrderProducts(
-			req.body.id as unknown as number
+		const orderProducts = await store.showOrderProduct(
+			req.body.order_id as unknown as number,
+			req.body.product_id as unknown as number
 		);
 		res.json(orderProducts);
 	} catch (err) {
@@ -118,7 +119,7 @@ const orderRoutes = (app: express.Application): void => {
 	app.patch('/orders/:id', edit);
 	app.delete('/orders', destroy);
 	app.post('/orders/:id', addOrderProduct);
-
+	app.get('/orders/:id/item/:id', showOrderProduct);
 	app.patch('/order/:id/item/:id', editOrderProduct);
 	app.delete('/orders/:id', deleteOrderProduct);
 };

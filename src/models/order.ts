@@ -88,15 +88,19 @@ export class OrderStore {
 		}
 	}
 
-	async indexOrderProducts(id: number): Promise<OrderProduct[]> {
+	async showOrderProduct(
+		order_id: number,
+		product_id: number
+	): Promise<OrderProduct[]> {
 		try {
 			const conn = await client.connect();
-			const sql = 'SELECT * FROM order_products where "order_id" = $1';
-			const result = await conn.query(sql, [id]);
+			const sql =
+				'SELECT * FROM order_products where "order_id" = $1 AND "product_id = $2';
+			const result = await conn.query(sql, [order_id, product_id]);
 			return result.rows;
 		} catch (err) {
 			throw new Error(
-				`Cannot retreive Products in Order (${id}): ${err}`
+				`Cannot retreive Product (${product_id}) in Order (${order_id}): ${err}`
 			);
 		}
 	}
@@ -105,7 +109,7 @@ export class OrderStore {
 		try {
 			const conn = await client.connect();
 			const sql =
-				'INSERT INTO order_products ("quantity", "order_id", "product_id") VALUES ($1, $2, $3) RETURING *';
+				'INSERT INTO order_products ("quantity", "order_id", "product_id") VALUES ($1, $2, $3) RETURNING *';
 
 			const result = await conn.query(sql, [
 				oP.quantity,
