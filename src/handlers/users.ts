@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
-import { User, UserStore } from '../models/user';
+import { User, UserModel } from '../models/user';
 import jwt from 'jsonwebtoken';
 import verifyAuthToken from '../middleware/verifyAuthToken';
 
-const store = new UserStore();
+const store = new UserModel();
 
 const index = async (_req: Request, res: Response) => {
 	const users = await store.index();

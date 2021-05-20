@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
-import { Product, ProductStore } from '../models/product';
+import { Product, ProductModel } from '../models/product';
 import verifyAuthToken from '../middleware/verifyAuthToken';
 
-const store = new ProductStore();
+const store = new ProductModel();
 
 const index = async (_req: Request, res: Response) => {
 	const products = await store.index();

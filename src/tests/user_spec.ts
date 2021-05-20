@@ -1,6 +1,6 @@
-import { User, UserStore } from '../models/user';
+import { User, UserModel } from '../models/user';
 
-const store = new UserStore();
+const store = new UserModel();
 
 describe('User Model', () => {
 	it('Create method should exist', () => {

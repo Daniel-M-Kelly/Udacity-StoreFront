@@ -7,7 +7,7 @@ export type Product = {
 	category: string;
 };
 
-export class ProductStore {
+export class ProductModel {
 	async index(): Promise<Product[]> {
 		try {
 			const conn = await client.connect();
