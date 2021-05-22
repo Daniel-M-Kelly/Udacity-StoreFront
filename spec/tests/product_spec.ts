@@ -1,99 +1,90 @@
+import { ProductModel } from '../../src/models/product';
 import { UserModel } from '../../src/models/user';
 import supertest from 'supertest';
 import app from '../../src/server';
 import client from '../../src/database';
 
 const userModel = new UserModel();
+const productModel = new ProductModel();
 const request = supertest(app);
 let userToken = '';
 
-describe('User Model', () => {
+describe('Product Model', () => {
 	describe('Test methods exist', () => {
 		it('Index method should exist', () => {
-			expect(userModel.index).toBeDefined();
+			expect(productModel.index).toBeDefined();
 		});
 
 		it('Show method should exist', () => {
-			expect(userModel.show).toBeDefined();
+			expect(productModel.show).toBeDefined();
 		});
 
 		it('Create method should exist', () => {
-			expect(userModel.create).toBeDefined();
+			expect(productModel.create).toBeDefined();
 		});
 
 		it('Edit method should exist', () => {
-			expect(userModel.edit).toBeDefined();
+			expect(productModel.edit).toBeDefined();
 		});
 
 		it('Delete method should exist', () => {
-			expect(userModel.delete).toBeDefined();
-		});
-
-		it('Authenticate method should exist', () => {
-			expect(userModel.authenticate).toBeDefined();
+			expect(productModel.delete).toBeDefined();
 		});
 	});
 
 	describe('Test methods return correct values', () => {
-		it('Create method should return a User', async () => {
-			const result = await userModel.create({
-				userName: 'testUser',
-				firstName: 'Test',
-				lastName: 'User',
-				password: 'test123'
+		it('Create method should return a Product', async () => {
+			const result = await productModel.create({
+				name: 'widget',
+				price: 9.99,
+				category: 'Misc.'
 			});
 			expect(result).toEqual(
 				jasmine.objectContaining({
-					userName: 'testUser',
-					firstName: 'Test',
-					lastName: 'User'
+					name: 'widget',
+					price: '9.99',
+					category: 'Misc.'
 				})
 			);
 		});
 
 		it('Index method should return array of users with testUser in it', async () => {
-			const result = await userModel.index();
+			const result = await productModel.index();
 			expect(result).toEqual([
 				jasmine.objectContaining({
-					userName: 'testUser'
+					name: 'widget'
 				})
 			]);
 		});
 
-		it('Show method should return testUser when called with ID', async () => {
-			const result = await userModel.show(1);
+		it('Show method should return widget when called with ID', async () => {
+			const result = await productModel.show(1);
 			expect(result).toEqual(
 				jasmine.objectContaining({
-					userName: 'testUser'
+					name: 'widget'
 				})
 			);
 		});
 
-		it('Edit method should return a User with edited properties', async () => {
-			const result = await userModel.edit({
+		it('Edit method should return a product with edited properties', async () => {
+			const result = await productModel.edit({
 				id: 1,
-				userName: 'testUser',
-				firstName: 'TestEdit',
-				lastName: 'User',
-				password: 'test123'
+				name: 'widget',
+				price: 19.99,
+				category: 'Misc.'
 			});
 			expect(result).toEqual(
 				jasmine.objectContaining({
-					firstName: 'TestEdit'
+					price: '19.99'
 				})
 			);
 		});
 
-		it('Authenticate method should return authenticated user', async () => {
-			const result = await userModel.authenticate('testUser', 'test123');
-			expect(result).toBeDefined;
-		});
-
 		it('Delete method should return', async () => {
-			const result = await userModel.delete(1);
+			const result = await productModel.delete(1);
 			expect(result).toEqual(
 				jasmine.objectContaining({
-					userName: 'testUser'
+					name: 'widget'
 				})
 			);
 		});
@@ -106,6 +97,12 @@ describe('User Model', () => {
 				firstName: 'Test',
 				lastName: 'User',
 				password: 'test123'
+			});
+
+			await productModel.create({
+				name: 'widget',
+				price: 19.99,
+				category: 'Misc.'
 			});
 		});
 
@@ -134,70 +131,68 @@ describe('User Model', () => {
 			userToken = response.body;
 		});
 
-		it('Test Index should return array of users', async () => {
+		it('Test Index should return array of products', async () => {
 			const response = await request
-				.get('/users')
+				.get('/products')
 				.set('Authorization', 'Bearer ' + userToken);
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual([
 				jasmine.objectContaining({
-					userName: 'testUser'
+					name: 'widget'
 				})
 			]);
 		});
 
-		it('Test Show should return User', async () => {
+		it('Test Show should return product', async () => {
 			const response = await request
-				.get('/users/2')
+				.get('/products/2')
 				.set('Authorization', 'Bearer ' + userToken);
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
-					userName: 'testUser'
+					name: 'widget'
 				})
 			);
 		});
 
-		it('Test Create should return created User', async () => {
+		it('Test Create should return created Product', async () => {
 			const response = await request
-				.post('/users')
+				.post('/products')
 				.set('Authorization', 'Bearer ' + userToken)
 				.send({
-					userName: 'testUser2',
-					firstName: 'Test',
-					lastName: 'User2',
-					password: 'test1234'
+					name: 'gizmo',
+					price: 99.99,
+					category: 'Misc.'
 				});
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
-					userName: 'testUser2'
+					name: 'gizmo'
 				})
 			);
 		});
 
-		it('Test edit should return edited User', async () => {
+		it('Test edit should return edited Product', async () => {
 			const response = await request
-				.patch('/users/2')
+				.patch('/products/2')
 				.set('Authorization', 'Bearer ' + userToken)
 				.send({
-					id: 2,
-					userName: 'testUser',
-					firstName: 'TestEdit',
-					lastName: 'User',
-					password: 'test1234'
+					id: 3,
+					name: 'gizmo',
+					price: 199.95,
+					category: 'Misc.'
 				});
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
-					firstName: 'TestEdit'
+					price: '199.95'
 				})
 			);
 		});
 
-		it('Test delete should return deleted User', async () => {
+		it('Test delete should return deleted Product', async () => {
 			const response = await request
-				.delete('/users')
+				.delete('/products')
 				.set('Authorization', 'Bearer ' + userToken)
 				.send({
 					id: 3
@@ -205,7 +200,7 @@ describe('User Model', () => {
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
-					userName: 'testUser2'
+					name: 'gizmo'
 				})
 			);
 		});
