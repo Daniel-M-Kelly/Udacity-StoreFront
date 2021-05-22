@@ -2,15 +2,15 @@ import express, { Request, Response } from 'express';
 import { Product, ProductModel } from '../models/product';
 import verifyAuthToken from '../middleware/verifyAuthToken';
 
-const store = new ProductModel();
+const productModel = new ProductModel();
 
 const index = async (_req: Request, res: Response) => {
-	const products = await store.index();
+	const products = await productModel.index();
 	res.json(products);
 };
 
 const show = async (req: Request, res: Response) => {
-	const product = await store.show(req.params.id as unknown as number);
+	const product = await productModel.show(req.params.id as unknown as number);
 	res.json(product);
 };
 
@@ -22,7 +22,7 @@ const create = async (req: Request, res: Response) => {
 	};
 
 	try {
-		const newProduct = await store.create(product);
+		const newProduct = await productModel.create(product);
 		res.json(newProduct);
 	} catch (err) {
 		res.status(400);
@@ -39,7 +39,7 @@ const edit = async (req: Request, res: Response) => {
 	};
 
 	try {
-		const editedProduct = await store.edit(product);
+		const editedProduct = await productModel.edit(product);
 		res.json(editedProduct);
 	} catch (err) {
 		res.status(400);
@@ -48,7 +48,7 @@ const edit = async (req: Request, res: Response) => {
 };
 
 const destroy = async (req: Request, res: Response) => {
-	const product = await store.delete(req.body.id as unknown as number);
+	const product = await productModel.delete(req.body.id as unknown as number);
 	res.json(product);
 };
 

@@ -2,15 +2,15 @@ import express, { Request, Response } from 'express';
 import { Order, OrderProduct, OrderModel } from '../models/order';
 import verifyAuthToken from '../middleware/verifyAuthToken';
 
-const store = new OrderModel();
+const orderModel = new OrderModel();
 
 const index = async (_req: Request, res: Response) => {
-	const orders = await store.index();
+	const orders = await orderModel.index();
 	res.json(orders);
 };
 
 const show = async (req: Request, res: Response) => {
-	const order = await store.show(req.params.id as unknown as number);
+	const order = await orderModel.show(req.params.id as unknown as number);
 	res.json(order);
 };
 
@@ -21,7 +21,7 @@ const create = async (req: Request, res: Response) => {
 	};
 
 	try {
-		const newOrder = await store.create(order);
+		const newOrder = await orderModel.create(order);
 		res.json(newOrder);
 	} catch (err) {
 		res.status(400);
@@ -37,7 +37,7 @@ const edit = async (req: Request, res: Response) => {
 	};
 
 	try {
-		const editedOrder = await store.edit(order);
+		const editedOrder = await orderModel.edit(order);
 		res.json(editedOrder);
 	} catch (err) {
 		res.status(400);
@@ -47,8 +47,20 @@ const edit = async (req: Request, res: Response) => {
 
 const destroy = async (req: Request, res: Response) => {
 	try {
-		const order = await store.delete(req.body.id);
+		const order = await orderModel.delete(req.body.id);
 		res.json(order);
+	} catch (err) {
+		res.status(400);
+		res.json(err);
+	}
+};
+
+const indexOrderProduct = async (req: Request, res: Response) => {
+	try {
+		const orderProducts = await orderModel.indexOrderProduct(
+			req.body.order_id as unknown as number
+		);
+		res.json(orderProducts);
 	} catch (err) {
 		res.status(400);
 		res.json(err);
@@ -57,7 +69,7 @@ const destroy = async (req: Request, res: Response) => {
 
 const showOrderProduct = async (req: Request, res: Response) => {
 	try {
-		const orderProducts = await store.showOrderProduct(
+		const orderProducts = await orderModel.showOrderProduct(
 			req.body.order_id as unknown as number,
 			req.body.product_id as unknown as number
 		);
@@ -76,7 +88,7 @@ const addOrderProduct = async (req: Request, res: Response) => {
 	};
 
 	try {
-		const newProduct = await store.addOrderProduct(product);
+		const newProduct = await orderModel.addOrderProduct(product);
 		res.json(newProduct);
 	} catch (err) {
 		res.status(400);
@@ -92,7 +104,7 @@ const editOrderProduct = async (req: Request, res: Response) => {
 		product_id: req.body.product_id
 	};
 	try {
-		const newProduct = await store.editOrderProduct(product);
+		const newProduct = await orderModel.editOrderProduct(product);
 		res.json(newProduct);
 	} catch (err) {
 		res.status(400);
@@ -102,7 +114,7 @@ const editOrderProduct = async (req: Request, res: Response) => {
 
 const deleteOrderProduct = async (req: Request, res: Response) => {
 	try {
-		const product = await store.deleteOrderProduct(
+		const product = await orderModel.deleteOrderProduct(
 			req.body.order_id as unknown as number,
 			req.body.product_id as unknown as number
 		);
@@ -120,8 +132,9 @@ const orderRoutes = (app: express.Application): void => {
 	app.patch('/orders/:id', verifyAuthToken, edit);
 	app.delete('/orders', verifyAuthToken, destroy);
 	app.post('/orders/:id', verifyAuthToken, addOrderProduct);
-	app.get('/orders/:id/item/:id', verifyAuthToken, showOrderProduct);
-	app.patch('/order/:id/item/:id', verifyAuthToken, editOrderProduct);
+	app.get('/orders/:id/items', verifyAuthToken, indexOrderProduct);
+	app.get('/orders/:id/items/:id', verifyAuthToken, showOrderProduct);
+	app.patch('/order/:id/items/:id', verifyAuthToken, editOrderProduct);
 	app.delete('/orders/:id', verifyAuthToken, deleteOrderProduct);
 };
 
