@@ -134,7 +134,7 @@ const orderRoutes = (app: express.Application): void => {
 	app.post('/orders/:id', verifyAuthToken, addOrderProduct);
 	app.get('/orders/:id/items', verifyAuthToken, indexOrderProduct);
 	app.get('/orders/:id/items/:id', verifyAuthToken, showOrderProduct);
-	app.patch('/order/:id/items/:id', verifyAuthToken, editOrderProduct);
+	app.patch('/orders/:id/items/:id', verifyAuthToken, editOrderProduct);
 	app.delete('/orders/:id', verifyAuthToken, deleteOrderProduct);
 };
 

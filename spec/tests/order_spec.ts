@@ -9,9 +9,9 @@ const userModel = new UserModel();
 const productModel = new ProductModel();
 const orderModel = new OrderModel();
 const request = supertest(app);
-const userToken = '';
+let userToken = '';
 
-describe('Order Model', () => {
+xdescribe('Order Model', () => {
 	describe('Test methods exist', () => {
 		describe('Test Order Methods', () => {
 			it('Index method should exist', () => {
@@ -166,7 +166,7 @@ describe('Order Model', () => {
 				);
 			});
 
-			xit('Index method should return array of orders with orderproduct 1 in it', async () => {
+			it('Index method should return array of orders with orderproduct 1 in it', async () => {
 				const result = await orderModel.indexOrderProduct(1);
 				expect(result).toEqual([
 					jasmine.objectContaining({
@@ -175,7 +175,7 @@ describe('Order Model', () => {
 				]);
 			});
 
-			xit('Show method should return widget when called with ID', async () => {
+			it('Show method should return widget when called with ID', async () => {
 				const result = await orderModel.showOrderProduct(1, 1);
 				expect(result).toEqual(
 					jasmine.objectContaining({
@@ -184,7 +184,7 @@ describe('Order Model', () => {
 				);
 			});
 
-			xit('Edit method should return a order with edited properties', async () => {
+			it('Edit method should return a order with edited properties', async () => {
 				const result = await orderModel.editOrderProduct({
 					id: 1,
 					quantity: 10,
@@ -198,7 +198,7 @@ describe('Order Model', () => {
 				);
 			});
 
-			xit('Delete method should return', async () => {
+			it('Delete method should return', async () => {
 				const result = await orderModel.deleteOrderProduct(1, 1);
 				expect(result).toEqual(
 					jasmine.objectContaining({
@@ -208,17 +208,22 @@ describe('Order Model', () => {
 			});
 		});
 	});
-	/*
-	xdescribe('Test API Endpoints', () => {
+
+	describe('Test API Endpoints', () => {
 		beforeAll(async () => {
 			await userModel.create({
-				userName: 'testUser',
+				userName: 'testUserOrderProduct',
 				firstName: 'Test',
 				lastName: 'User',
 				password: 'test123'
 			});
 
 			await orderModel.create({
+				user_id: 1,
+				complete: false
+			});
+
+			await productModel.create({
 				name: 'widget',
 				price: 19.99,
 				category: 'Misc.'
@@ -228,7 +233,7 @@ describe('Order Model', () => {
 		afterAll(async () => {
 			const conn = await client.connect();
 			const sql =
-				'DELETE FROM users; \nALTER SEQUENCE users_id_seq RESTART WITH 1;\n';
+				'DELETE FROM order_products; \nALTER SEQUENCE order_products_id_seq RESTART WITH 1;\n DELETE FROM orders; \nALTER SEQUENCE orders_id_seq RESTART WITH 1;\n DELETE FROM products; \nALTER SEQUENCE products_id_seq RESTART WITH 1;\n DELETE FROM users; \nALTER SEQUENCE users_id_seq RESTART WITH 1;\n ';
 			conn.query(sql);
 		});
 
@@ -242,7 +247,7 @@ describe('Order Model', () => {
 				.post('/users/authenticate')
 				.set('Content-type', 'application/json')
 				.send({
-					userName: 'testUser',
+					userName: 'testUserOrderProduct',
 					password: 'test123'
 				});
 			expect(response.status).toBe(200);
@@ -250,78 +255,86 @@ describe('Order Model', () => {
 			userToken = response.body;
 		});
 
-		it('Test Index should return array of orders', async () => {
+		it('Test add should return created order product', async () => {
 			const response = await request
-				.get('/orders')
-				.set('Authorization', 'Bearer ' + userToken);
+				.post('/orders/1')
+				.set('Authorization', 'Bearer ' + userToken)
+				.send({
+					quantity: 5,
+					order_id: 1,
+					product_id: 1
+				});
+			expect(response.status).toBe(200);
+			expect(response.body).toEqual(
+				jasmine.objectContaining({
+					quantity: 5
+				})
+			);
+		});
+
+		it('Test Index should return array of products in an order', async () => {
+			const response = await request
+				.get('/orders/1/items')
+				.set('Authorization', 'Bearer ' + userToken)
+				.send({
+					order_id: 1
+				});
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual([
 				jasmine.objectContaining({
-					name: 'widget'
+					id: 1
 				})
 			]);
 		});
 
 		it('Test Show should return order', async () => {
 			const response = await request
-				.get('/orders/2')
-				.set('Authorization', 'Bearer ' + userToken);
-			expect(response.status).toBe(200);
-			expect(response.body).toEqual(
-				jasmine.objectContaining({
-					name: 'widget'
-				})
-			);
-		});
-
-		it('Test Create should return created order', async () => {
-			const response = await request
-				.post('/orders')
+				.get('/orders/1/items/1')
 				.set('Authorization', 'Bearer ' + userToken)
 				.send({
-					name: 'gizmo',
-					price: 99.99,
-					category: 'Misc.'
+					order_id: 1,
+					product_id: 1
 				});
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
-					name: 'gizmo'
+					product: 'widget'
 				})
 			);
 		});
 
 		it('Test edit should return edited order', async () => {
 			const response = await request
-				.patch('/orders/2')
+				.patch('/orders/1/items/1')
 				.set('Authorization', 'Bearer ' + userToken)
 				.send({
-					id: 3,
-					name: 'gizmo',
-					price: 199.95,
-					category: 'Misc.'
+					id: 1,
+					product_id: 1,
+					order_id: 1,
+					quantity: 100
 				});
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
-					price: '199.95'
+					quantity: 100
 				})
 			);
 		});
 
-		it('Test delete should return deleted order', async () => {
+		it('Test delete should return deleted order product', async () => {
 			const response = await request
-				.delete('/orders')
+				.delete('/orders/1')
 				.set('Authorization', 'Bearer ' + userToken)
 				.send({
-					id: 3
+					order_id: 1,
+					product_id: 1
 				});
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
-					name: 'gizmo'
+					id: 1
 				})
 			);
 		});
-	});*/
+	});
 });

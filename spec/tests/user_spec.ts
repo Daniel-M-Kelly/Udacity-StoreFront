@@ -155,7 +155,10 @@ describe('User Model', () => {
 		it('Test Show should return User', async () => {
 			const response = await request
 				.get('/users/1')
-				.set('Authorization', 'Bearer ' + userToken);
+				.set('Authorization', 'Bearer ' + userToken)
+				.send({
+					id: 1
+				});
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
