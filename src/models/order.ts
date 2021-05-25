@@ -18,7 +18,7 @@ export class OrderModel {
 		try {
 			const conn = await client.connect();
 			const sql =
-				"SELECT o.id AS order_id, u.\"userName\" AS userName, JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id GROUP BY o.id, u.\"userName\", o.complete";
+				"SELECT o.id AS id, u.\"userName\" AS userName, JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id GROUP BY o.id, u.\"userName\", o.complete";
 
 			const result = await conn.query(sql);
 
@@ -33,7 +33,7 @@ export class OrderModel {
 		try {
 			const conn = await client.connect();
 			const sql =
-				"SELECT o.id AS order_id, u.\"userName\" AS userName, JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id WHERE o.id = $1 GROUP BY o.id, u.\"userName\", o.complete";
+				"SELECT o.id AS id, u.\"userName\" AS userName, JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id WHERE o.id = $1 GROUP BY o.id, u.\"userName\", o.complete";
 
 			const result = await conn.query(sql, [id]);
 
@@ -81,7 +81,7 @@ export class OrderModel {
 	async delete(id: number): Promise<Order> {
 		try {
 			const conn = await client.connect();
-			const sql = 'DELETE FROM orders WHERE "id"=$1';
+			const sql = 'DELETE FROM orders WHERE "id"=$1 RETURNING *';
 			const result = await conn.query(sql, [id]);
 			const order = result.rows[0];
 			return order;
@@ -94,7 +94,7 @@ export class OrderModel {
 		try {
 			const conn = await client.connect();
 			const sql =
-				"SELECT o.id AS order_id, JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products FROM orders AS o LEFT JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id WHERE o.id = $1 GROUP BY o.id";
+				"SELECT o.id AS id, JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products FROM orders AS o LEFT JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id WHERE o.id = $1 GROUP BY o.id";
 			const result = await conn.query(sql, [order_id]);
 			return result.rows;
 		} catch (err) {
@@ -111,7 +111,7 @@ export class OrderModel {
 		try {
 			const conn = await client.connect();
 			const sql =
-				'SELECT op."order_id", op."quantity", p."name" AS product, p."price" AS price FROM order_products AS op JOIN products AS p ON p."id" = op."product_id" WHERE "order_id" = $1 AND "product_id" = $2';
+				'SELECT op."order_id" AS id, op."quantity", p."name" AS product, p."price" AS price FROM order_products AS op JOIN products AS p ON p."id" = op."product_id" WHERE "order_id" = $1 AND "product_id" = $2';
 			const result = await conn.query(sql, [order_id, product_id]);
 			return result.rows[0];
 		} catch (err) {

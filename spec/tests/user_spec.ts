@@ -35,6 +35,12 @@ describe('User Model', () => {
 	});
 
 	describe('Test methods return correct values', () => {
+		afterAll(async () => {
+			const conn = await client.connect();
+			const sql =
+				'DELETE FROM users; \nALTER SEQUENCE users_id_seq RESTART WITH 1;\n';
+			conn.query(sql);
+		});
 		it('Create method should return a User', async () => {
 			const result = await userModel.create({
 				userName: 'testUser',
@@ -102,7 +108,7 @@ describe('User Model', () => {
 	describe('Test API Endpoints', () => {
 		beforeAll(async () => {
 			await userModel.create({
-				userName: 'testUser',
+				userName: 'testUserAPI',
 				firstName: 'Test',
 				lastName: 'User',
 				password: 'test123'
@@ -126,7 +132,7 @@ describe('User Model', () => {
 				.post('/users/authenticate')
 				.set('Content-type', 'application/json')
 				.send({
-					userName: 'testUser',
+					userName: 'testUserAPI',
 					password: 'test123'
 				});
 			expect(response.status).toBe(200);
@@ -141,19 +147,19 @@ describe('User Model', () => {
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual([
 				jasmine.objectContaining({
-					userName: 'testUser'
+					userName: 'testUserAPI'
 				})
 			]);
 		});
 
 		it('Test Show should return User', async () => {
 			const response = await request
-				.get('/users/2')
+				.get('/users/1')
 				.set('Authorization', 'Bearer ' + userToken);
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(
 				jasmine.objectContaining({
-					userName: 'testUser'
+					userName: 'testUserAPI'
 				})
 			);
 		});
@@ -181,7 +187,7 @@ describe('User Model', () => {
 				.patch('/users/2')
 				.set('Authorization', 'Bearer ' + userToken)
 				.send({
-					id: 2,
+					id: 1,
 					userName: 'testUser',
 					firstName: 'TestEdit',
 					lastName: 'User',
@@ -200,7 +206,7 @@ describe('User Model', () => {
 				.delete('/users')
 				.set('Authorization', 'Bearer ' + userToken)
 				.send({
-					id: 3
+					id: 2
 				});
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual(

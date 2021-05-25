@@ -93,7 +93,7 @@ describe('Product Model', () => {
 	describe('Test API Endpoints', () => {
 		beforeAll(async () => {
 			await userModel.create({
-				userName: 'testUser',
+				userName: 'testUserProduct',
 				firstName: 'Test',
 				lastName: 'User',
 				password: 'test123'
@@ -109,7 +109,7 @@ describe('Product Model', () => {
 		afterAll(async () => {
 			const conn = await client.connect();
 			const sql =
-				'DELETE FROM users; \nALTER SEQUENCE users_id_seq RESTART WITH 1;\n';
+				'DELETE FROM users;\n ALTER SEQUENCE users_id_seq RESTART WITH 1;\nDELETE FROM products;\n ALTER SEQUENCE products_id_seq RESTART WITH 1;\n';
 			conn.query(sql);
 		});
 
@@ -123,7 +123,7 @@ describe('Product Model', () => {
 				.post('/users/authenticate')
 				.set('Content-type', 'application/json')
 				.send({
-					userName: 'testUser',
+					userName: 'testUserProduct',
 					password: 'test123'
 				});
 			expect(response.status).toBe(200);
@@ -172,7 +172,7 @@ describe('Product Model', () => {
 			);
 		});
 
-		it('Test edit should return edited Product', async () => {
+		it('Test edit should return edited User', async () => {
 			const response = await request
 				.patch('/products/2')
 				.set('Authorization', 'Bearer ' + userToken)

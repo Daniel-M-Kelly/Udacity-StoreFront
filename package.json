@@ -8,7 +8,7 @@
     "start-prod": "node ./dist/server.js",
     "build": "npx tsc",
     "watch": "tsc-watch --onSuccess 'node ./dist/server.js'",
-    "test": "set ENV=test&& db-migrate db:create storefront_test && db-migrate --env test up && jasmine-ts && db-migrate db:drop storefront_test",
+    "test": "set ENV=test&& db-migrate db:create storefront_test && db-migrate --env test up && jasmine-ts",
     "lint": "eslint **/*.ts --fix --quiet",
     "prettier": "npx prettier **/*.ts --check",
     "tsc": "tsc"
