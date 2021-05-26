@@ -9,7 +9,7 @@ const productModel = new ProductModel();
 const request = supertest(app);
 let userToken = '';
 
-xdescribe('Product Model', () => {
+describe('Product Model', () => {
 	describe('Test methods exist', () => {
 		it('Index method should exist', () => {
 			expect(productModel.index).toBeDefined();
@@ -90,7 +90,7 @@ xdescribe('Product Model', () => {
 		});
 	});
 
-	xdescribe('Test API Endpoints', () => {
+	describe('Test API Endpoints', () => {
 		beforeAll(async () => {
 			await userModel.create({
 				userName: 'testUserProduct',

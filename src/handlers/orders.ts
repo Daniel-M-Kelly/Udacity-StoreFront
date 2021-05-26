@@ -135,7 +135,7 @@ const deleteOrderProduct = async (req: Request, res: Response) => {
 const orderRoutes = (app: express.Application): void => {
 	app.get('/orders', index);
 	app.get('/orders/:id', verifyAuthToken, show);
-	app.get('/orders/current/:id', verifyAuthToken, currentOrder)
+	app.get('/orders/current/:id', verifyAuthToken, currentOrder);
 	app.post('/orders', verifyAuthToken, create);
 	app.patch('/orders/:id', verifyAuthToken, edit);
 	app.delete('/orders', verifyAuthToken, destroy);
