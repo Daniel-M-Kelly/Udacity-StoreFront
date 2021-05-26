@@ -9,6 +9,13 @@ const index = async (_req: Request, res: Response) => {
 	res.json(orders);
 };
 
+const currentOrder = async (req: Request, res: Response) => {
+	const orders = await orderModel.current(
+		req.body.user_id as unknown as number
+	);
+	res.json(orders);
+};
+
 const show = async (req: Request, res: Response) => {
 	const order = await orderModel.show(req.params.id as unknown as number);
 	res.json(order);
@@ -128,6 +135,7 @@ const deleteOrderProduct = async (req: Request, res: Response) => {
 const orderRoutes = (app: express.Application): void => {
 	app.get('/orders', index);
 	app.get('/orders/:id', verifyAuthToken, show);
+	app.get('/orders/current/:id', verifyAuthToken, currentOrder)
 	app.post('/orders', verifyAuthToken, create);
 	app.patch('/orders/:id', verifyAuthToken, edit);
 	app.delete('/orders', verifyAuthToken, destroy);

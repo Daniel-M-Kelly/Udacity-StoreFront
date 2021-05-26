@@ -11,7 +11,7 @@ const orderModel = new OrderModel();
 const request = supertest(app);
 let userToken = '';
 
-xdescribe('Order Model', () => {
+describe('Order Model', () => {
 	describe('Test methods exist', () => {
 		describe('Test Order Methods', () => {
 			it('Index method should exist', () => {
@@ -32,6 +32,10 @@ xdescribe('Order Model', () => {
 
 			it('Delete method should exist', () => {
 				expect(orderModel.delete).toBeDefined();
+			});
+
+			it('current method should exist', () => {
+				expect(orderModel.current).toBeDefined();
 			});
 		});
 		describe('Test Order Product Methods', () => {
@@ -106,6 +110,16 @@ xdescribe('Order Model', () => {
 						id: 1
 					})
 				]);
+			});
+
+			it('Current method should return incomplete orders associated with user_id', async () => {
+				const result = await orderModel.current(1);
+				expect(result).toEqual(
+					jasmine.objectContaining({
+						id: 1,
+						userName: 'testUserProduct'
+					})
+				);
 			});
 
 			it('Show method should return widget when called with ID', async () => {

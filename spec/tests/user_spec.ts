@@ -7,7 +7,7 @@ const userModel = new UserModel();
 const request = supertest(app);
 let userToken = '';
 
-describe('User Model', () => {
+xdescribe('User Model', () => {
 	describe('Test methods exist', () => {
 		it('Index method should exist', () => {
 			expect(userModel.index).toBeDefined();

@@ -18,7 +18,7 @@ export class OrderModel {
 		try {
 			const conn = await client.connect();
 			const sql =
-				"SELECT o.id AS id, u.\"userName\" AS userName, JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id GROUP BY o.id, u.\"userName\", o.complete";
+				"SELECT o.id AS id, u.\"userName\" AS \"userName\", JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id GROUP BY o.id, u.\"userName\", o.complete";
 
 			const result = await conn.query(sql);
 
@@ -33,7 +33,22 @@ export class OrderModel {
 		try {
 			const conn = await client.connect();
 			const sql =
-				"SELECT o.id AS id, u.\"userName\" AS userName, JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id WHERE o.id = $1 GROUP BY o.id, u.\"userName\", o.complete";
+				"SELECT o.id AS id, u.\"userName\" AS \"userName\", JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id WHERE o.id = $1 GROUP BY o.id, u.\"userName\", o.complete";
+
+			const result = await conn.query(sql, [id]);
+
+			conn.release();
+			return result.rows[0];
+		} catch (err) {
+			throw new Error(`unable to retrieve order: (${id}) ${err}`);
+		}
+	}
+
+	async current(id: number): Promise<Order> {
+		try {
+			const conn = await client.connect();
+			const sql =
+				"SELECT o.id AS id, u.\"userName\" AS \"userName\", JSON_AGG(JSONB_BUILD_OBJECT('product_id', p.id, 'name', p.name, 'price', p.price, 'quantity', op.quantity)) AS products, o.complete AS complete FROM orders AS o Left JOIN order_products AS op ON o.id = op.order_id LEFT JOIN products AS p ON op.product_id = p.id LEFT JOIN users AS u ON u.id = o.user_id WHERE o.user_id = $1 AND o.complete = false GROUP BY o.id, u.\"userName\", o.complete";
 
 			const result = await conn.query(sql, [id]);
 
