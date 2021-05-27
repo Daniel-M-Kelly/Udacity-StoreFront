@@ -1,15 +1,35 @@
-Installed dotenv package for environment variables including postgres user, password, and database.
+# Database setup
+ - postgres database docker image running on localhost port 5432
+ - production database - storefront
+ - test database - storefront_test
+ - user: postgres
+ - password: password123
 
 
-Database design
-3  tables:
-    products - id , name VARCHAR, price NUMERIC(17,2), category VARCHAR
-    users - id , firstName VARCHAR, lastName VARCHAR, password VARCHAR
-    orders - id , product_id , quantity INT, user_id, complete boolean 
+# .env file contents
+	EXPRESS_PORT=3000
+	POSTGRES_HOST=127.0.0.1
+	POSTGRES_DB=storefront
+	POSTGRES_DB_TEST=storefront_test
+	POSTGRES_USER=postgres
+	POSTGRES_PASSWORD=password123
+	BCRYPT_PASSWORD=password321
+	SALT_ROUNDS=10
+	ENV=dev
+	TOKEN_SECRET=123password
 
-- The design specifies that an order status can only be active or complete. So rather than use a varchar column to store those values, it's more efficient to use a boolean value to represent the two possible states. In a real situation, I would ask weather there is a possibility of additional status' such as 'Returned', or 'Cancelled'
 
-db-migrate installed
-    database.json with dev and test DBs.
+# npm scripts
 
-dotenv installed
+- npm run prettier - run prettier check - "prettier": "npx prettier **/*.ts --check"
+
+- npm run lint - run lint with prettier plugin, and auto fix issues. - "lint": "eslint **/*.ts --fix --quiet" 
+
+- npm run test - Set environment to test, create test database, run jasmine, then drop test database. Note: for windows systems you need to include the "Set" command to set the ENV variable
+"test": "set ENV=test&& db-migrate db:create storefront_test && db-migrate --env test up && jasmine-ts"
+
+- npm run start-dev - start development app /w nodemon monitoring for changes - "start-dev": "nodemon src/server.ts"
+
+- npm run build - build production version of app in ./dist/ folder - "build": "npx tsc"
+
+- npm run start-prod - Start production app from ./dist folder - "start-prod": "node ./dist/server.js"
