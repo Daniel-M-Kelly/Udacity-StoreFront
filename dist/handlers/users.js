@@ -12,7 +12,7 @@ const index = async (_req, res) => {
     res.json(users);
 };
 const show = async (req, res) => {
-    const user = await store.show(req.params.id);
+    const user = await store.show(req.body.id);
     res.json(user);
 };
 const create = async (req, res) => {

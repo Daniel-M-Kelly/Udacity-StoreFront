@@ -39,7 +39,8 @@ describe('User Model', () => {
 			const conn = await client.connect();
 			const sql =
 				'DELETE FROM users; \nALTER SEQUENCE users_id_seq RESTART WITH 1;\n';
-			conn.query(sql);
+			await conn.query(sql);
+			conn.release();
 		});
 		it('Create method should return a User', async () => {
 			const result = await userModel.create({
@@ -99,7 +100,7 @@ describe('User Model', () => {
 			const result = await userModel.delete(1);
 			expect(result).toEqual(
 				jasmine.objectContaining({
-					userName: 'testUser'
+					id: 1
 				})
 			);
 		});
@@ -119,7 +120,8 @@ describe('User Model', () => {
 			const conn = await client.connect();
 			const sql =
 				'DELETE FROM users; \nALTER SEQUENCE users_id_seq RESTART WITH 1;\n';
-			conn.query(sql);
+			await conn.query(sql);
+			conn.release();
 		});
 
 		it('Check if server runs, should return 200 status', async () => {

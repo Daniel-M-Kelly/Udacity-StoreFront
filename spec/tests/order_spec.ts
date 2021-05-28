@@ -11,7 +11,7 @@ const orderModel = new OrderModel();
 const request = supertest(app);
 let userToken = '';
 
-xdescribe('Order Model', () => {
+describe('Order Model', () => {
 	describe('Test methods exist', () => {
 		describe('Test Order Methods', () => {
 			it('Index method should exist', () => {
@@ -81,7 +81,8 @@ xdescribe('Order Model', () => {
 			const conn = await client.connect();
 			const sql =
 				'DELETE FROM users;\n ALTER SEQUENCE users_id_seq RESTART WITH 1;\nDELETE FROM products;\n ALTER SEQUENCE products_id_seq RESTART WITH 1;\n';
-			conn.query(sql);
+			await conn.query(sql);
+			conn.release();
 		});
 
 		describe('Test Order Methods return correct values', () => {
@@ -165,8 +166,9 @@ xdescribe('Order Model', () => {
 				const conn = await client.connect();
 				const sql =
 					'DELETE FROM order_products;\n ALTER SEQUENCE order_products_id_seq RESTART WITH 1; DELETE FROM orders;\n ALTER SEQUENCE orders_id_seq RESTART WITH 1;\n';
-				conn.query(sql);
-			}); 
+				await conn.query(sql);
+				conn.release();
+			});
 			it('Add method should return an order product', async () => {
 				const result = await orderModel.addOrderProduct({
 					quantity: 5,
@@ -242,8 +244,9 @@ xdescribe('Order Model', () => {
 		afterAll(async () => {
 			const conn = await client.connect();
 			const sql =
-				'DELETE FROM order_products; \nALTER SEQUENCE order_products_id_seq RESTART WITH 1;\n DELETE FROM orders; \nALTER SEQUENCE orders_id_seq RESTART WITH 1;\n DELETE FROM products; \nALTER SEQUENCE products_id_seq RESTART WITH 1;\n DELETE FROM users; \nALTER SEQUENCE users_id_seq RESTART WITH 1;\n ';
-			conn.query(sql);
+				'DELETE FROM order_products; \n ALTER SEQUENCE order_products_id_seq RESTART WITH 1;\n DELETE FROM orders; \n ALTER SEQUENCE orders_id_seq RESTART WITH 1;\n DELETE FROM products; \n ALTER SEQUENCE products_id_seq RESTART WITH 1;\n DELETE FROM users; \n ALTER SEQUENCE users_id_seq RESTART WITH 1;\n';
+			await conn.query(sql);
+			conn.release();
 		});
 
 		it('Check if server runs, should return 200 status', async () => {

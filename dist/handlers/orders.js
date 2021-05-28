@@ -10,6 +10,10 @@ const index = async (_req, res) => {
     const orders = await orderModel.index();
     res.json(orders);
 };
+const currentOrder = async (req, res) => {
+    const orders = await orderModel.current(req.body.user_id);
+    res.json(orders);
+};
 const show = async (req, res) => {
     const order = await orderModel.show(req.params.id);
     res.json(order);
@@ -117,13 +121,14 @@ const deleteOrderProduct = async (req, res) => {
 const orderRoutes = (app) => {
     app.get('/orders', index);
     app.get('/orders/:id', verifyAuthToken_1.default, show);
+    app.get('/orders/current/:id', verifyAuthToken_1.default, currentOrder);
     app.post('/orders', verifyAuthToken_1.default, create);
     app.patch('/orders/:id', verifyAuthToken_1.default, edit);
     app.delete('/orders', verifyAuthToken_1.default, destroy);
     app.post('/orders/:id', verifyAuthToken_1.default, addOrderProduct);
     app.get('/orders/:id/items', verifyAuthToken_1.default, indexOrderProduct);
     app.get('/orders/:id/items/:id', verifyAuthToken_1.default, showOrderProduct);
-    app.patch('/order/:id/items/:id', verifyAuthToken_1.default, editOrderProduct);
+    app.patch('/orders/:id/items/:id', verifyAuthToken_1.default, editOrderProduct);
     app.delete('/orders/:id', verifyAuthToken_1.default, deleteOrderProduct);
 };
 exports.default = orderRoutes;

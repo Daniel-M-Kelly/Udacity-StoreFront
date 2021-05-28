@@ -77,27 +77,27 @@ Used for associating one or more products to an order, including quantities orde
 ## Database schema
 #### Products table
 - id - serial primary key 
-- name - varchar
-- price - numeric(17,2)
+- name - varchar - Cannot be null
+- price - numeric(17,2) - Cannot be null
 - category - varchar
 
 #### Users table
 - id - serial primary key
-- userName - varchar unique
-- firstName - varchar
-- lastName - varchar
-- password - varchar
+- userName - varchar unique - Cannot be null
+- firstName - varchar - Cannot be null
+- lastName - varchar - Cannot be null
+- password - varchar  - Cannot be null
 
 #### Orders table
 - id - serial primary key
-- user_id bigint references users(id)
-- complete (boolean)
+- user_id bigint references users(id)  - Cannot be null
+- complete (boolean) - Cannot be null
 
 
 #### Order_Products table
 - id - serial primary key
-- quantity - integer
-- order_id - bigint references orders(id)
-- product_id - bigint references products(id)
+- quantity - integer  - Cannot be null
+- order_id - bigint references orders(id)  - Cannot be null
+- product_id - bigint references products(id)  - Cannot be null
 
 

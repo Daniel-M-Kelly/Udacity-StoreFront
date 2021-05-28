@@ -101,11 +101,13 @@ export class UserModel {
 	async delete(id: number): Promise<User> {
 		try {
 			const conn = await client.connect();
-			const sql = 'DELETE FROM users WHERE "id"=($1) RETURNING *';
+			const sql = 'DELETE FROM users WHERE "id"=$1 RETURNING *';
 
 			const result = await conn.query(sql, [id]);
 
 			const user = result.rows[0];
+
+			conn.release();
 
 			return user;
 		} catch (err) {
@@ -126,6 +128,7 @@ export class UserModel {
 			const user = result.rows[0];
 
 			if (bcrypt.compareSync(password + pepper, user.password)) {
+				conn.release();
 				return user;
 			}
 		}
